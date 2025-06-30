@@ -158,6 +158,57 @@ $ clashmixin -r
 sudo bash uninstall.sh
 ```
 
+## 无sudo/root权限
+- 上面均不需要做，只需要运行`mihomo on`即可
+
+1. 在项目路径下用bash执行下述命令
+```bash
+mkdir -p ~/.config/mihomo/
+cp resources/zip/mihomo-linux-amd64-compatible-v1.19.2.gz ~/
+cp resources/Country.mmdb ~/.config/mihomo/
+install -D -m +x <(gzip -dc ~/mihomo-linux-amd64-compatible-v1.19.2.gz) ~/bin/mihomo
+
+cat <<'EOF' >~/.config/mihomo/mihomo.sh
+mihomo() {
+    case $1 in
+    on)
+        export http_proxy=http://127.0.0.1:7890
+        export https_proxy=$http_proxy
+        export HTTP_PROXY=$http_proxy
+        export HTTPS_PROXY=$http_proxy
+        export all_proxy=$http_proxy
+        export ALL_PROXY=$http_proxy
+        export NO_PROXY="localhost,127.0.0.1,::1"
+        pgrep -f mihomo || {
+            ~/bin/mihomo -d ~/.config/mihomo/ -f ~/.config/mihomo/config.yaml >& ~/.config/mihomo/log & 
+        }
+        echo '已开启代理环境'
+        ;;
+    off)
+        unset http_proxy
+        unset https_proxy
+        unset HTTP_PROXY
+        unset HTTPS_PROXY
+        unset all_proxy
+        unset ALL_PROXY
+        unset no_proxy
+        unset NO_PROXY
+        pkill -9 -f mihomo
+        echo '已关闭代理环境'
+        ;;
+    esac
+}
+EOF
+
+echo >>~/.bashrc
+echo 'source ~/.config/mihomo/mihomo.sh' >>~/.bashrc
+echo 'mihomo on' >>~/.bashrc
+```
+2. 将机场的订阅配置写入到文件：~/.config/mihomo/config.yaml。注意这里config.yaml中也是有配置端口的。
+3. 若7890端口被占用，在~/.config/mihomo/mihomo.sh 中更改为与config.yaml中的对应的可用端口。
+4. mihomo on 开启代理环境，mihomo off 关闭代理环境。
+
+
 ## 常见问题
 
 [wiki](https://github.com/nelvko/clash-for-linux-install/wiki/FAQ)
