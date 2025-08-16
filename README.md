@@ -163,10 +163,10 @@ sudo bash uninstall.sh
 
 1. 在项目路径下用bash执行下述命令
 ```bash
+
 mkdir -p ~/.config/mihomo/
-cp resources/zip/mihomo-linux-amd64-compatible-v1.19.2.gz ~/
-cp resources/Country.mmdb ~/.config/mihomo/
-install -D -m +x <(gzip -dc ~/mihomo-linux-amd64-compatible-v1.19.2.gz) ~/bin/mihomo
+install -D resources/Country.mmdb ~/.config/mihomo/Country.mmdb
+install -D -m +x <(gzip -dc resources/zip/mihomo-linux-amd64-compatible-v1.19.2.gz) ~/bin/mihomo
 
 cat <<'EOF' >~/.config/mihomo/mihomo.sh
 mihomo() {
@@ -182,7 +182,7 @@ mihomo() {
         pgrep -f mihomo || {
             ~/bin/mihomo -d ~/.config/mihomo/ -f ~/.config/mihomo/config.yaml >& ~/.config/mihomo/log & 
         }
-        echo '已开启代理环境'
+        echo "✅ Proxy has been enabled."
         ;;
     off)
         unset http_proxy
@@ -194,7 +194,7 @@ mihomo() {
         unset no_proxy
         unset NO_PROXY
         pkill -9 -f mihomo
-        echo '已关闭代理环境'
+        echo "❌ Proxy has been disabled."
         ;;
     esac
 }
